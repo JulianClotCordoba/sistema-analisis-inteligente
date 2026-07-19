@@ -17,6 +17,7 @@ import pandas as pd
 from .analysis.anomaly import run_anomaly_detection
 from .analysis.clustering import run_clustering
 from .analysis.correlation import CorrelationAnalyzer
+from .cleaning import basic_clean
 from .config import AnalysisConfig
 from .exceptions import InsufficientDataError, SmartEdaError
 from .ingestion import Source, load_dataset
@@ -72,6 +73,8 @@ class AnalysisEngine:
         start = time.perf_counter()
 
         df = load_dataset(source, **read_kwargs)
+        if self.config.enable_basic_cleaning:
+            df = basic_clean(df)
         profile = self.profiler.profile(df)
 
         correlations, dependencies = self._analyze_correlations(df, profile)

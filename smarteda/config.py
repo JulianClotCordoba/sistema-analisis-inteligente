@@ -39,5 +39,6 @@ class AnalysisConfig:
 
     # --- General ---
     random_state: int = 42  # reproducibilidad en toda corrida
+    enable_basic_cleaning: bool = True  # limpieza básica automática tras la carga
     max_sample_values: int = 5  # valores de muestra por columna en el perfil
     min_rows_for_ml: int = 5  # mínimo de filas para intentar clustering/IsolationForest

@@ -22,6 +22,7 @@ from .exceptions import (
     UnsupportedFileFormatError,
 )
 from .ingestion import load_dataset
+from .cleaning import basic_clean
 from .models import (
     AnalysisReport,
     AnomalyResult,
@@ -45,6 +46,7 @@ __all__ = [
     "AnalysisConfig",
     "AnalysisReport",
     "load_dataset",
+    "basic_clean",
     "DataProfiler",
     # modelos / contratos
     "DatasetProfile",
