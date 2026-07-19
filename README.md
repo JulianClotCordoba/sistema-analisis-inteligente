@@ -1,9 +1,8 @@
 # Sistema Inteligente de Análisis Automatizado y Exploratorio de Datos
 
 Backend de análisis inteligente de datos tabulares (CSV/Excel) para el curso
-**SC-250 Paradigmas de Programación**. Este repositorio contiene la **parte de
-Julian**: carga de datos, perfilado, análisis estadístico y algoritmos de
-Machine Learning. El frontend (Jose) y la integración (Rachel) se conectan a
+**SC-250 Paradigmas de Programación**. Este repositorio contiene la carga de datos, perfilado, análisis estadístico y algoritmos de
+Machine Learning. El frontend (Jose proximo) y la integración (Rachel proximo) se conectan a
 través de una API pública sencilla.
 
 ## ¿Qué hace?
