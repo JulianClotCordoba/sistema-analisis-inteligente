@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smarteda"
+version = "1.0.0"
+description = "Backend de análisis inteligente y exploratorio de datos (SC-250)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "scipy>=1.10",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+smarteda = "smarteda.__main__:main"
+
+[tool.setuptools]
+packages = ["smarteda", "smarteda.analysis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.black]
+line-length = 90
+
+[tool.ruff]
+line-length = 90
