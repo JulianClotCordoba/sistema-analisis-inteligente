@@ -7,3 +7,7 @@ openpyxl>=3.1
 
 # Desarrollo / pruebas
 pytest>=7.0
+
+# Frontend / visualizaciones
+streamlit>=1.40
+plotly>=5.24

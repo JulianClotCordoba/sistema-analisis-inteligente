@@ -1,0 +1,839 @@
+:root {
+  --ink: #f1ecdd;
+  --muted: #aaa89f;
+  --brand: #e4ad3a;
+  --brand-light: #f1cb70;
+  --brand-dark: #2d220c;
+  --line: #37362f;
+  --line-soft: #24251f;
+  --surface: #11130f;
+  --surface-soft: #171914;
+  --paper: #e9e4d6;
+  --warning: #df8436;
+}
+
+.stApp {
+  background:
+    linear-gradient(rgba(228, 173, 58, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(228, 173, 58, 0.025) 1px, transparent 1px),
+    #0c0d0b;
+  background-size: 72px 72px;
+}
+
+[data-testid="stHeader"] {
+  background: rgba(12, 13, 11, 0.86);
+  border-bottom: 1px solid rgba(55, 54, 47, 0.55);
+  backdrop-filter: blur(14px);
+}
+
+[data-testid="stSidebar"] {
+  border-right: 1px solid var(--line);
+}
+
+[data-testid="stSidebar"] > div:first-child {
+  background: #10120e;
+}
+
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+  color: var(--muted);
+}
+
+.block-container {
+  max-width: 1240px;
+  padding-top: 2.35rem;
+  padding-bottom: 4rem;
+}
+
+.seda-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.35rem 0 2.25rem;
+}
+
+.seda-brand-rule {
+  display: block;
+  width: 0.22rem;
+  height: 1.35rem;
+  background: var(--brand);
+}
+
+.seda-brand-name {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  line-height: 1;
+}
+
+.seda-brand-name span {
+  color: var(--brand);
+}
+
+.seda-eyebrow {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.seda-hero {
+  min-height: 27rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, transparent 66%, rgba(228, 173, 58, 0.055) 66%, transparent calc(66% + 1px)),
+    linear-gradient(180deg, transparent 72%, rgba(228, 173, 58, 0.055) 72%, transparent calc(72% + 1px)),
+    #10120e;
+}
+
+.seda-hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 27rem;
+  max-width: 980px;
+  padding: clamp(2rem, 4.5vw, 4.5rem);
+}
+
+.seda-hero h1 {
+  max-width: 900px;
+  margin: 1rem 0 1.25rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.65rem, 4.7vw, 4rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.seda-hero h1 em {
+  position: relative;
+  color: var(--paper);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.seda-hero h1 em::after {
+  content: "";
+  position: absolute;
+  right: 0.06em;
+  bottom: -0.16em;
+  width: 2.9rem;
+  height: 0.19rem;
+  background: var(--brand);
+}
+
+.seda-hero p {
+  max-width: 570px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.seda-hero-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.15rem;
+  margin-top: 2rem;
+  color: #7f8079;
+  font-family: "Courier New", monospace;
+  font-size: 0.67rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.seda-hero-formats span::before {
+  content: "+";
+  margin-right: 0.35rem;
+  color: var(--brand);
+}
+
+.seda-process-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 0 2.8rem;
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: rgba(17, 19, 15, 0.94);
+}
+
+.seda-feature {
+  min-height: 8.75rem;
+  padding: 1.35rem 1.5rem 1.45rem;
+  border-right: 1px solid var(--line);
+}
+
+.seda-feature:last-child {
+  border-right: 0;
+}
+
+.seda-feature-index {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+
+.seda-feature-title {
+  margin: 0.75rem 0 0.32rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.seda-feature-copy {
+  max-width: 270px;
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.seda-section-heading {
+  margin-top: 2.6rem;
+  margin-bottom: 0.3rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.seda-section-heading::before {
+  content: "/";
+  margin-right: 0.5rem;
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-weight: 400;
+}
+
+.seda-section-copy {
+  margin-bottom: 1.25rem;
+  color: var(--muted);
+}
+
+.seda-panel {
+  padding: 1.45rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.seda-file-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  background: var(--surface-soft);
+}
+
+.seda-file-name {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.seda-file-meta {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.seda-insight {
+  margin-bottom: 0.7rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.seda-insight-warning {
+  border-left-color: var(--warning);
+  background: #1b150e;
+}
+
+.seda-status {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #6e5a27;
+  border-left: 3px solid var(--brand);
+  background: #19160e;
+  color: var(--brand-light);
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.seda-page-lead {
+  max-width: 850px;
+  margin: -0.3rem 0 1.35rem;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.seda-page-lead strong {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.seda-context-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-bottom: 1.35rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: #7f8079;
+  font-family: "Courier New", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.seda-context-line strong {
+  color: var(--brand-light);
+  font-weight: 700;
+}
+
+.seda-context-line span:not(:first-child)::before,
+.seda-context-line strong::before {
+  content: "/";
+  margin-right: 1rem;
+  color: #57584f;
+}
+
+.seda-method-note {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.25fr) 1fr;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  background: var(--surface-soft);
+}
+
+.seda-method-note span {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seda-method-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.seda-relation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.seda-relation-card {
+  min-height: 14rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(228, 173, 58, 0.04), transparent 55%),
+    var(--surface);
+}
+
+.seda-relation-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seda-relation-topline span:last-child {
+  color: #77786f;
+}
+
+.seda-relation-pair {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1rem 0 0.65rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.seda-relation-pair span {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+}
+
+.seda-relation-card p {
+  min-height: 3rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.seda-relation-score {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.15rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.seda-score-label {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: #77786f;
+  font-family: "Courier New", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seda-relation-score strong {
+  color: var(--paper);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.seda-direction-pill {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #66562d;
+  color: var(--brand-light);
+  font-family: "Courier New", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.seda-dependency-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.seda-dependency-card {
+  display: grid;
+  grid-template-columns: 4.4rem 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.seda-dependency-value {
+  color: var(--brand);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.seda-dependency-label {
+  margin-bottom: 0.2rem;
+  color: #7f8079;
+  font-family: "Courier New", monospace;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seda-dependency-title {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.seda-dependency-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.seda-dependency-card strong {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.seda-empty-state {
+  padding: 2rem;
+  border: 1px dashed #5a5138;
+  background: rgba(17, 19, 15, 0.72);
+}
+
+.seda-empty-kicker {
+  margin-bottom: 0.65rem;
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seda-empty-title {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.seda-empty-copy {
+  max-width: 700px;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.seda-decision-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 17.5rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand);
+  background:
+    linear-gradient(180deg, rgba(228, 173, 58, 0.045), transparent 45%),
+    var(--surface);
+}
+
+.seda-decision-index {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.seda-decision-title {
+  min-height: 3.25rem;
+  margin: 0.8rem 0 0.65rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.seda-decision-card p {
+  flex: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.seda-decision-source {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line-soft);
+  color: #797a72;
+  font-family: "Courier New", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.seda-segment-card {
+  min-height: 14.5rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand);
+  background:
+    linear-gradient(145deg, rgba(228, 173, 58, 0.055), transparent 55%),
+    var(--surface);
+}
+
+.seda-segment-number,
+.seda-quality-kicker {
+  color: var(--brand);
+  font-family: "Courier New", monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.seda-segment-count {
+  margin-top: 0.75rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.35rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.seda-segment-percentage {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.seda-segment-bar {
+  height: 0.25rem;
+  margin: 1rem 0;
+  overflow: hidden;
+  background: #292a24;
+}
+
+.seda-segment-bar span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+
+.seda-segment-card p {
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.seda-noise-card {
+  display: grid;
+  grid-template-columns: minmax(185px, 0.45fr) 1fr;
+  gap: 1.5rem;
+  margin-top: 0.85rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid #505149;
+  border-left: 3px solid #77786f;
+  background: var(--surface);
+}
+
+.seda-noise-title {
+  margin-top: 0.35rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.seda-noise-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.seda-quality-card {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.35fr) 1fr;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  padding: 1.15rem 1.2rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  background: var(--surface-soft);
+}
+
+.seda-quality-caution {
+  border-left-color: var(--warning);
+}
+
+.seda-quality-title {
+  margin-top: 0.3rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.seda-quality-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.seda-anomaly-method-card {
+  min-height: 15rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--warning);
+  background:
+    linear-gradient(150deg, rgba(223, 132, 54, 0.07), transparent 58%),
+    var(--surface);
+}
+
+.seda-anomaly-method {
+  color: var(--brand-light);
+  font-family: "Courier New", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.seda-anomaly-count {
+  margin-top: 0.8rem;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.55rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.seda-anomaly-ratio {
+  margin-top: 0.35rem;
+  color: var(--warning);
+  font-family: "Courier New", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.seda-anomaly-method-card p {
+  margin: 1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+div[data-testid="stMetric"] {
+  min-height: 8rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  background: rgba(17, 19, 15, 0.96);
+}
+
+div[data-testid="stMetricLabel"] {
+  color: var(--muted);
+}
+
+div[data-testid="stMetricValue"] {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+}
+
+div[data-testid="stFileUploader"] {
+  padding: 0.65rem;
+  border: 1px dashed #756331;
+  border-radius: 0;
+  background: #11130f;
+}
+
+div[data-testid="stFileUploaderDropzone"] {
+  background: #151713;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+  min-height: 2.85rem;
+  border-radius: 0;
+  font-family: "Courier New", monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.stButton > button[kind="primary"],
+.stDownloadButton > button[kind="primary"] {
+  color: #17130a;
+}
+
+button,
+[role="button"] {
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+@media (max-width: 760px) {
+  .block-container {
+    padding-top: 1.25rem;
+  }
+
+  .seda-hero {
+    min-height: 0;
+  }
+
+  .seda-hero-copy {
+    min-height: 0;
+    padding: 2.25rem 1.35rem;
+  }
+
+  .seda-hero h1 {
+    font-size: clamp(2.25rem, 11vw, 3.2rem);
+    white-space: normal;
+  }
+
+  .seda-hero h1 em {
+    white-space: normal;
+  }
+
+  .seda-process-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .seda-feature {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .seda-feature:last-child {
+    border-bottom: 0;
+  }
+
+  .seda-file-line {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .seda-relation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seda-method-note {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .seda-context-line span:not(:first-child)::before,
+  .seda-context-line strong::before {
+    display: none;
+  }
+
+  .seda-noise-card,
+  .seda-quality-card {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
