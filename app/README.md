@@ -22,8 +22,8 @@ La aplicación ya incluye:
 8. Pantalla de Segmentos con mapa, tamaños, silhouette y explicación de métodos.
 9. Pantalla de Datos inusuales con comparación Z-Score/IQR/Isolation Forest,
    mapa de señales, consenso y prioridad de revisión.
-
-La vista de Reporte se agregará progresivamente.
+10. Pantalla de Reporte con resumen ejecutivo, recomendaciones, limitaciones y
+    descarga de un PDF paginado listo para compartir.
 
 ## Instalación local
 
@@ -63,6 +63,8 @@ En la pantalla actual:
   que devuelve el backend para mostrar los grupos sin recalcular el clustering.
 - La pantalla **Datos inusuales** compara las máscaras ya generadas por los tres
   detectores y las ubica sobre la proyección del backend.
+- La pantalla **Reporte** reúne todo el `AnalysisReport` y genera un PDF en memoria
+  sin volver a ejecutar el análisis.
 
 Las próximas pantallas utilizarán:
 

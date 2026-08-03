@@ -91,6 +91,10 @@ El backend expone un único objeto, `AnalysisEngine`, que devuelve un
 completo (qué campos usar para cada gráfico, cómo conectar la estadística
 descriptiva de Rachel) está en [`docs/api_contract.md`](docs/api_contract.md).
 
+La guía navegable del frontend comienza en
+[`docs/frontend/README.md`](docs/frontend/README.md) e incluye enlaces directos
+a las funciones y estructuras que se explican.
+
 ## Decisiones técnicas
 
 - **Python + pandas + scikit-learn + scipy**: es lo asignado en la división de

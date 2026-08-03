@@ -29,6 +29,7 @@ from smarteda import AnalysisConfig, AnalysisEngine  # noqa: E402
 from smarteda.exceptions import SmartEdaError  # noqa: E402
 from app.anomalies import render_anomalies_view  # noqa: E402
 from app.relationships import render_relationships_view  # noqa: E402
+from app.reporting import render_report_view  # noqa: E402
 from app.segments import render_segments_view  # noqa: E402
 
 
@@ -146,7 +147,14 @@ def render_sidebar() -> None:
     ):
         navigate_to("Datos inusuales")
         st.rerun()
-    st.sidebar.button("06  Reporte", width="stretch", disabled=True)
+    if st.sidebar.button(
+        "06  Reporte",
+        width="stretch",
+        disabled=not has_report,
+        type="primary" if st.session_state.view == "Reporte" else "secondary",
+    ):
+        navigate_to("Reporte")
+        st.rerun()
 
     st.sidebar.divider()
     if has_report:
@@ -482,6 +490,11 @@ def main() -> None:
         )
     elif st.session_state.view == "Datos inusuales":
         render_anomalies_view(
+            st.session_state.report,
+            st.session_state.active_file,
+        )
+    elif st.session_state.view == "Reporte":
+        render_report_view(
             st.session_state.report,
             st.session_state.active_file,
         )
