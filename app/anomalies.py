@@ -375,45 +375,20 @@ def render_anomalies_view(report: Any, filename: str | None) -> None:
         return
 
     st.markdown(
-        '<div class="seda-eyebrow">Señales que merecen revisión</div>',
+        '<div class="seda-eyebrow">Registros para revisar</div>',
         unsafe_allow_html=True,
     )
-    st.title("¿Qué registros se comportan de forma inusual?")
-    st.markdown(
-        """
-        <div class="seda-page-lead">
-          SmartEDA utiliza tres perspectivas para encontrar valores extremos y
-          combinaciones poco frecuentes.
-          <strong>“Inusual” no significa incorrecto, fraude ni problema. Significa
-          que el registro merece contexto antes de tomar una decisión.</strong>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.title("Registros con comportamientos inusuales")
 
     results = list(report.anomalies)
     if not results:
         _render_empty_state(
-            "El motor no generó resultados de anomalías.",
+            "No fue posible obtener resultados de registros inusuales.",
             "Se necesitan variables numéricas y suficientes registros para ejecutar los detectores.",
         )
         return
 
     total = len(results[0].outlier_mask)
-    variables = ", ".join(_humanize(value) for value in results[0].columns_analyzed)
-    safe_filename = html.escape(str(filename or "Dataset"))
-    st.markdown(
-        f"""
-        <div class="seda-context-line">
-          <span>Archivo analizado</span>
-          <strong>{safe_filename}</strong>
-          <span>{total:,} registros procesados</span>
-          <span>{html.escape(variables)}</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     method_map = _result_map(report)
     available = [method for method in METHOD_NAMES if method in method_map]
     selected_method = st.radio(
@@ -478,7 +453,7 @@ def render_anomalies_view(report: Any, filename: str | None) -> None:
         _render_method_details(selected)
 
     st.markdown(
-        '<div class="seda-section-heading">Qué detectó cada método</div>',
+        '<div class="seda-section-heading">Resultados por método</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -506,7 +481,7 @@ def render_anomalies_view(report: Any, filename: str | None) -> None:
         """
         <div class="seda-section-copy">
           La tabla ordena primero las filas en las que coinciden más métodos. El
-          número corresponde a la posición en los datos procesados por el motor;
+          número corresponde a la posición en los datos procesados;
           si se eliminaron filas vacías o duplicadas, puede diferir del archivo original.
         </div>
         """,
@@ -515,22 +490,7 @@ def render_anomalies_view(report: Any, filename: str | None) -> None:
     queue = _review_queue(results)
     st.dataframe(queue, width="stretch", hide_index=True)
 
-    st.markdown(
-        '<div class="seda-section-heading">Cómo actuar con estas señales</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        """
-        <div class="seda-section-copy">
-          Utiliza los resultados para organizar una revisión, nunca para eliminar
-          registros o tomar medidas sobre personas de forma automática.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    _render_decision_guidance(results, total)
-
-    with st.expander("Z-Score, IQR e Isolation Forest sin fórmulas"):
+    with st.expander("Métodos de detección"):
         st.markdown(
             """
             - **Z-Score:** pregunta si un valor está extremadamente lejos del promedio.
@@ -541,24 +501,5 @@ def render_anomalies_view(report: Any, filename: str | None) -> None:
 
             Z-Score e IQR suelen ser más estrictos con extremos individuales.
             Isolation Forest puede encontrar más casos porque observa patrones conjuntos.
-            """
-        )
-
-    with st.expander("¿Cómo se construyó esta pantalla?"):
-        st.markdown(
-            """
-            El frontend no volvió a ejecutar los detectores. Consumió directamente:
-
-            - `report.anomalies[i].method`
-            - `report.anomalies[i].outlier_mask`
-            - `report.anomalies[i].outlier_count`
-            - `report.anomalies[i].outlier_ratio`
-            - `report.anomalies[i].columns_analyzed`
-            - `report.anomalies[i].details`
-            - `report.clustering.projection_2d` para el mapa
-
-            La prioridad se obtiene comparando las máscaras ya calculadas por Julián;
-            no se recalcula ninguna anomalía. El reporte actual no incluye el DataFrame
-            limpio, por eso esta pantalla no inventa valores originales ni boxplots.
             """
         )

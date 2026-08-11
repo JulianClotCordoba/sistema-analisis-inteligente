@@ -18,7 +18,7 @@ def test_sample_dataset_kmeans_segments_screen():
 
     assert not app.exception
     assert [title.value for title in app.title] == [
-        "¿Qué tipos de registros aparecen en tus datos?"
+        "Grupos identificados en los datos"
     ]
     assert any(
         metric.label == "Segmentos encontrados" and metric.value == "3"

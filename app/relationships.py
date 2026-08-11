@@ -426,33 +426,11 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
         st.info("Primero debes analizar un archivo.")
         return
 
-    safe_filename = html.escape(str(filename or "Dataset"))
     st.markdown(
         '<div class="seda-eyebrow">Relaciones entre variables</div>',
         unsafe_allow_html=True,
     )
-    st.title("¿Qué datos se mueven juntos?")
-    st.markdown(
-        """
-        <div class="seda-page-lead">
-          Descubre qué variables suelen aumentar o disminuir al mismo tiempo y
-          cómo cambian los valores numéricos entre diferentes categorías.
-          <strong>Una relación ayuda a encontrar patrones, pero no demuestra que
-          una variable cause a la otra.</strong>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f"""
-        <div class="seda-context-line">
-          <span>Archivo analizado</span>
-          <strong>{safe_filename}</strong>
-          <span>{len(report.profile.numeric_columns)} variables numéricas</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.title("Relaciones entre variables")
 
     available_methods = [
         method
@@ -463,11 +441,10 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
         _render_empty_state(
             "No fue posible comparar variables numéricas.",
             (
-                "Se necesitan al menos dos columnas numéricas. Puedes volver a "
-                "Carga de datos y analizar un archivo con más medidas."
+                "El análisis de relaciones requiere al menos dos columnas numéricas."
             ),
         )
-        with st.expander("¿Por qué se necesitan dos variables numéricas?"):
+        with st.expander("Requisito para el análisis de relaciones"):
             st.write(
                 "Una relación compara cómo cambia un número frente a otro. Con una "
                 "sola columna no existe un segundo valor con el cual compararla."
@@ -482,7 +459,7 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
         key="relationship_method",
         help=(
             "Pearson busca cambios uniformes; Spearman observa la tendencia "
-            "general. Puedes alternarlos sin volver a analizar el archivo."
+            "general. Ambos métodos usan los mismos datos analizados."
         ),
     )
     result = report.correlations[selected_method]
@@ -508,15 +485,14 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
     )
 
     st.markdown(
-        '<div class="seda-section-heading">Relaciones que vale la pena revisar</div>',
+        '<div class="seda-section-heading">Relaciones identificadas</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
         """
         <div class="seda-section-copy">
-          El backend destaca automáticamente los pares cuyo índice absoluto es
-          0.70 o superior. Cuanto más cerca esté de 1 o −1, más consistente es
-          el patrón.
+          Se muestran los pares cuyo índice absoluto es 0.70 o superior. Cuanto
+          más cerca esté de 1 o −1, más consistente es el patrón.
         </div>
         """,
         unsafe_allow_html=True,
@@ -546,33 +522,26 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
         "La diagonal siempre vale 1.00 porque compara cada variable consigo misma."
     )
 
-    with st.expander("Entender Pearson y Spearman sin fórmulas"):
+    with st.expander("Métodos de correlación"):
         first_col, second_col = st.columns(2, gap="large")
         with first_col:
             st.markdown(
                 """
-                **Pearson — cambios uniformes**
+                **Pearson**
 
-                Es útil cuando dos variables parecen avanzar siguiendo una
-                dirección bastante regular. Los valores extremos pueden influir
-                más en este método.
+                Mide la relación lineal entre dos variables numéricas. Los valores
+                extremos pueden influir en el resultado.
                 """
             )
         with second_col:
             st.markdown(
                 """
-                **Spearman — tendencia general**
+                **Spearman**
 
-                Se fija en el orden: si los registros con valores altos en una
-                variable también suelen ser altos en otra. Tolera mejor cambios
-                que no siguen un ritmo constante.
+                Mide la relación entre el orden de los valores de dos variables.
+                Es adecuado cuando la tendencia no es necesariamente lineal.
                 """
             )
-        st.info(
-            "No tienes que escoger un método “correcto”. Compararlos permite ver "
-            "si el patrón se mantiene desde dos perspectivas."
-        )
-
     st.markdown(
         '<div class="seda-section-heading">Diferencias entre categorías</div>',
         unsafe_allow_html=True,
@@ -605,36 +574,4 @@ def render_relationships_view(report: Any, filename: str | None) -> None:
                 "Puede que el archivo no tenga variables categóricas o que sus "
                 "grupos presenten valores numéricos bastante parecidos."
             ),
-        )
-
-    st.markdown(
-        '<div class="seda-section-heading">Cómo usar estos hallazgos</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        """
-        <div class="seda-section-copy">
-          Estas son pistas para orientar una revisión, no decisiones automáticas.
-          Combínalas con el conocimiento del contexto y comprueba los casos
-          individuales antes de actuar.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    _render_decision_guidance(report, selected_method)
-
-    with st.expander("¿Cómo se construyó esta pantalla?"):
-        st.markdown(
-            """
-            El frontend no recalculó las relaciones. Consumió directamente:
-
-            - `report.correlations["pearson"].matrix`
-            - `report.correlations["spearman"].matrix`
-            - `report.correlations[metodo].strong_pairs`
-            - `report.dependencies`
-
-            Julián calculó esos resultados en el backend. Esta pantalla los
-            convirtió en mensajes, tarjetas y gráficas para que sean más fáciles
-            de interpretar.
-            """
         )

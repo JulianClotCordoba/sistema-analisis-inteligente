@@ -18,7 +18,7 @@ def test_sample_dataset_relationships_screen():
 
     _button(app, "03  Relaciones").click().run(timeout=30)
     assert not app.exception
-    assert [title.value for title in app.title] == ["¿Qué datos se mueven juntos?"]
+    assert [title.value for title in app.title] == ["Relaciones entre variables"]
     assert any(
         metric.label == "Variables comparadas" and metric.value == "3"
         for metric in app.metric

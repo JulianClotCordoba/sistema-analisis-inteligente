@@ -28,6 +28,26 @@ def test_load_excel(tmp_path, mixed_df):
     assert loaded.shape == mixed_df.shape
 
 
+def test_load_legacy_excel_uses_excel_reader(monkeypatch, mixed_df):
+    """La extensión .xls sigue la misma ruta de lectura que .xlsx."""
+    class UploadedFile:
+        name = "datos.xls"
+
+    captured = {}
+
+    def fake_read_excel(source, **kwargs):
+        captured["source"] = source
+        return mixed_df
+
+    monkeypatch.setattr(pd, "read_excel", fake_read_excel)
+
+    source = UploadedFile()
+    loaded = load_dataset(source)
+
+    assert loaded.equals(mixed_df)
+    assert captured["source"] is source
+
+
 def test_missing_file_raises():
     with pytest.raises(FileValidationError):
         load_dataset("no_existe.csv")

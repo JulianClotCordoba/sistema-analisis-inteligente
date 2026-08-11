@@ -112,7 +112,7 @@ def build_executive_summary(report: Any) -> str:
     """Crea una lectura corta usando únicamente resultados del contrato."""
     profile = report.profile
     parts = [
-        f"SmartEDA analizó {profile.n_rows:,} registros y {profile.n_cols} variables."
+        f"El análisis incluye {profile.n_rows:,} registros y {profile.n_cols} variables."
     ]
     relationships = _strong_relationships(report)
     if relationships:
@@ -158,8 +158,8 @@ def build_recommendations(report: Any) -> list[str]:
         )
     if report.clustering is not None and report.clustering.n_clusters:
         recommendations.append(
-            "Comparar indicadores y resultados entre segmentos antes de aplicar una "
-            "misma estrategia a todos los registros."
+            "Comparar los indicadores de cada segmento para identificar sus "
+            "diferencias principales."
         )
     consensus = _consensus_count(report)
     if consensus:
@@ -168,8 +168,8 @@ def build_recommendations(report: Any) -> list[str]:
             "detectores y confirmar su contexto antes de corregirlos o eliminarlos."
         )
     recommendations.append(
-        "Validar los hallazgos con conocimiento del negocio y documentar cualquier "
-        "decisión tomada a partir del análisis."
+        "Interpretar los resultados según el contexto del conjunto de datos y "
+        "documentar las conclusiones obtenidas."
     )
     return recommendations[:5]
 
@@ -354,7 +354,7 @@ def _draw_page_frame(canvas: Any, doc: Any, filename: str) -> None:
     canvas.rect(0, height - 30, width, 30, fill=1, stroke=0)
     canvas.setFillColor(PDF_GOLD_LIGHT)
     canvas.setFont("Helvetica-Bold", 9)
-    canvas.drawString(doc.leftMargin, height - 19, "SMARTEDA")
+    canvas.drawString(doc.leftMargin, height - 19, "PROYECTO UNIVERSITARIO")
     canvas.setFillColor(colors.HexColor("#D5D2C8"))
     canvas.setFont("Helvetica", 7.5)
     safe_name = Path(filename).name[:58]
@@ -363,7 +363,7 @@ def _draw_page_frame(canvas: Any, doc: Any, filename: str) -> None:
     canvas.line(doc.leftMargin, 25, width - doc.rightMargin, 25)
     canvas.setFillColor(PDF_MUTED)
     canvas.setFont("Helvetica", 7.5)
-    canvas.drawString(doc.leftMargin, 14, "Reporte automático - validar antes de decidir")
+    canvas.drawString(doc.leftMargin, 14, "Análisis exploratorio de datos")
     canvas.drawRightString(width - doc.rightMargin, 14, f"Página {canvas.getPageNumber()}")
     canvas.restoreState()
 
@@ -379,9 +379,9 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
         leftMargin=20 * mm,
         topMargin=18 * mm,
         bottomMargin=15 * mm,
-        title=f"Reporte SmartEDA - {safe_filename}",
-        author="SmartEDA",
-        subject="Reporte ejecutivo de análisis exploratorio",
+        title=f"Reporte de análisis - {safe_filename}",
+        author="Proyecto universitario",
+        subject="Reporte de análisis exploratorio",
     )
     styles = _pdf_styles()
     story: list[Any] = []
@@ -389,8 +389,8 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
     story.extend(
         [
             Spacer(1, 8),
-            _p("REPORTE EJECUTIVO DE DATOS", styles["small"]),
-            _p("Análisis exploratorio inteligente", styles["title"]),
+            _p("REPORTE DE DATOS", styles["small"]),
+            _p("Análisis exploratorio", styles["title"]),
             _p(
                 f"Archivo: {safe_filename}\nGenerado: {_generated_at(report)}\n"
                 f"Procesamiento: {report.metadata.get('elapsed_seconds', 0):.3f} segundos",
@@ -400,7 +400,7 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
             Spacer(1, 15),
         ]
     )
-    story.extend(_section_title("Resumen ejecutivo", styles))
+    story.extend(_section_title("Resumen de resultados", styles))
     summary_box = Table(
         [[_p(build_executive_summary(report), styles["callout"])]],
         colWidths=[170 * mm],
@@ -419,7 +419,7 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
         )
     )
     story.extend([summary_box, Spacer(1, 12)])
-    story.extend(_section_title("Hallazgos principales", styles))
+    story.extend(_section_title("Resultados principales", styles))
     for insight in report.insights[:7]:
         story.append(_p(f"- {insight.message}", styles["body"]))
 
@@ -532,7 +532,7 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
     else:
         story.append(_p("No se generaron resultados de anomalías.", styles["body"]))
 
-    story.extend(_section_title("Próximos pasos recomendados", styles))
+    story.extend(_section_title("Puntos para revisar", styles))
     for index, recommendation in enumerate(build_recommendations(report), start=1):
         story.append(_p(f"{index}. {recommendation}", styles["body"]))
 
@@ -542,7 +542,7 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
         "Un segmento representa similitud numérica, no una categoría comercial definitiva.",
         "Un registro inusual puede ser válido y no debe eliminarse automáticamente.",
         "Los resultados dependen de la calidad y representatividad del archivo analizado.",
-        "Las decisiones deben combinar este reporte con conocimiento del contexto.",
+        "La interpretación de los resultados requiere considerar el contexto de los datos.",
     ]
     for limitation in limitations:
         story.append(_p(f"- {limitation}", styles["body"]))
@@ -550,11 +550,11 @@ def generate_pdf_report(report: Any, filename: str | None = None) -> bytes:
     story.extend(_section_title("Metodología", styles))
     story.append(
         _p(
-            "El motor de SmartEDA realizó perfilado de variables, correlaciones "
-            "Pearson y Spearman, dependencias categóricas, clustering con "
+            "El análisis incluye perfilado de variables, correlaciones Pearson y "
+            "Spearman, dependencias categóricas, segmentación con "
             f"{_algorithm_name(clustering.algorithm) if clustering else 'el método disponible'} "
             "y detección de anomalías mediante Z-Score, IQR e Isolation Forest. "
-            "Este documento presenta esos resultados sin recalcular el análisis.",
+            "Este documento presenta los resultados obtenidos.",
             styles["small"],
         )
     )
@@ -638,43 +638,20 @@ def render_report_view(report: Any, filename: str | None) -> None:
         st.info("Primero debes analizar un archivo.")
         return
 
-    safe_filename = html.escape(str(filename or "Dataset"))
     st.markdown(
         '<div class="seda-eyebrow">Documento final del análisis</div>',
         unsafe_allow_html=True,
     )
-    st.title("Tu reporte está listo para compartir")
-    st.markdown(
-        """
-        <div class="seda-page-lead">
-          Reunimos la estructura, relaciones, segmentos y señales inusuales en una
-          lectura ejecutiva. Puedes revisarla aquí o descargar el documento completo.
-          <strong>El reporte organiza evidencia y próximos pasos; las decisiones
-          finales siempre requieren contexto humano.</strong>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f"""
-        <div class="seda-context-line">
-          <span>Archivo analizado</span>
-          <strong>{safe_filename}</strong>
-          <span>{html.escape(_generated_at(report))}</span>
-          <span>{report.metadata.get('elapsed_seconds', 0):.3f} segundos</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.title("Reporte del análisis")
 
     metrics = st.columns(4)
     metrics[0].metric("Registros", f"{report.profile.n_rows:,}")
     metrics[1].metric("Variables", report.profile.n_cols)
-    metrics[2].metric("Hallazgos", len(report.insights))
+    metrics[2].metric("Resultados", len(report.insights))
     metrics[3].metric("Faltantes", f"{_missing_total(report):,}")
 
     st.markdown(
-        '<div class="seda-section-heading">Resumen ejecutivo</div>',
+        '<div class="seda-section-heading">Resumen de resultados</div>',
         unsafe_allow_html=True,
     )
     st.html(
@@ -689,15 +666,14 @@ def render_report_view(report: Any, filename: str | None) -> None:
     )
 
     st.markdown(
-        '<div class="seda-section-heading">Qué contiene el reporte</div>',
+        '<div class="seda-section-heading">Contenido del reporte</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
         """
         <div class="seda-section-copy">
-          La vista resume lo más importante de cada módulo. El PDF agrega tablas,
-          metodología, recomendaciones y limitaciones para que pueda compartirse
-          sin necesidad de abrir la aplicación.
+          La vista resume los resultados de cada sección. El PDF incluye tablas,
+          metodología, recomendaciones y limitaciones del análisis.
         </div>
         """,
         unsafe_allow_html=True,
@@ -707,7 +683,7 @@ def render_report_view(report: Any, filename: str | None) -> None:
     preview_column, action_column = st.columns([1.45, 0.75], gap="large")
     with preview_column:
         st.markdown(
-            '<div class="seda-section-heading">Hallazgos incluidos</div>',
+            '<div class="seda-section-heading">Resultados incluidos</div>',
             unsafe_allow_html=True,
         )
         for insight in report.insights[:6]:
@@ -721,7 +697,7 @@ def render_report_view(report: Any, filename: str | None) -> None:
             )
         if len(report.insights) > 6:
             st.caption(
-                f"El PDF incluye una selección ejecutiva de los {len(report.insights)} hallazgos."
+                f"El PDF incluye una selección de los {len(report.insights)} resultados."
             )
 
     with action_column:
@@ -735,8 +711,8 @@ def render_report_view(report: Any, filename: str | None) -> None:
             dedent(
                 """
                 <div class="seda-export-card">
-                  <div class="seda-export-label">PDF EJECUTIVO</div>
-                  <div class="seda-export-title">Listo para descargar</div>
+                  <div class="seda-export-label">DOCUMENTO PDF</div>
+                  <div class="seda-export-title">Disponible para descargar</div>
                   <p>
                     Incluye resumen, tablas, recomendaciones, metodología,
                     limitaciones y numeración de páginas.
@@ -755,46 +731,14 @@ def render_report_view(report: Any, filename: str | None) -> None:
         )
         st.caption(f"Documento generado en esta sesión · {len(pdf_bytes) / 1024:.1f} KB")
 
-    st.markdown(
-        '<div class="seda-section-heading">Próximos pasos sugeridos</div>',
-        unsafe_allow_html=True,
-    )
-    recommendations = build_recommendations(report)
-    columns = st.columns(2, gap="small")
-    for index, recommendation in enumerate(recommendations):
-        with columns[index % 2]:
-            st.html(
-                dedent(
-                    f"""
-                    <article class="seda-report-action">
-                      <span>{index + 1:02d}</span>
-                      <p>{html.escape(recommendation)}</p>
-                    </article>
-                    """
-                ).strip()
-            )
-
     with st.expander("Alcance y limitaciones del reporte"):
         st.markdown(
             """
             - Una relación no demuestra causalidad.
-            - Los segmentos todavía necesitan interpretación del negocio.
+            - Los segmentos requieren interpretación según el contexto de los datos.
             - Un registro inusual no debe eliminarse automáticamente.
             - El resultado depende de la calidad del archivo analizado.
             - El número de fila procesada puede diferir del archivo original si la
               limpieza eliminó filas vacías o duplicadas.
-            """
-        )
-
-    with st.expander("¿Cómo se construyó este reporte?"):
-        st.markdown(
-            """
-            El reporte consume `report.profile`, `report.correlations`,
-            `report.dependencies`, `report.clustering`, `report.anomalies`,
-            `report.insights`, `report.descriptive` y `report.metadata`.
-
-            Julián calculó los resultados analíticos. El frontend los organiza y
-            ReportLab genera el PDF en memoria; no se vuelve a ejecutar el análisis
-            y el archivo no se guarda permanentemente en el servidor.
             """
         )

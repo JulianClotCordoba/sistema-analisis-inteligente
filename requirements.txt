@@ -4,6 +4,8 @@ numpy>=1.24
 scikit-learn>=1.3
 scipy>=1.10
 openpyxl>=3.1
+# Lector requerido por pandas para archivos Excel antiguos (.xls).
+xlrd>=2.0.1
 
 # Desarrollo / pruebas
 pytest>=7.0

@@ -1,4 +1,4 @@
-"""Dashboard principal de SmartEDA.
+"""
 
 Esta primera versión implementa la ruta vertical del frontend:
 
@@ -179,7 +179,7 @@ def analyze_source(source: Any, filename: str, algorithm: str) -> None:
             source.seek(0)
         config = AnalysisConfig(clustering_algorithm=algorithm)
         engine = AnalysisEngine(config)
-        with st.spinner("Analizando estructura, relaciones y patrones..."):
+        with st.spinner("Procesando el archivo..."):
             report = engine.analyze(source)
     except SmartEdaError as exc:
         st.error(
@@ -207,44 +207,44 @@ def render_hero() -> None:
         """
         <section class="seda-hero">
           <div class="seda-hero-copy">
-            <div class="seda-eyebrow">Exploración automática de datos</div>
-            <h1>Análisis exploratorio<br><em>sin fricción técnica.</em></h1>
+            <div class="seda-eyebrow">Proyecto Grupo #2  · Paradigmas de Programación</div>
+            <h1>Análisis exploratorio<br><em>de datos de forma automatizada.</em></h1>
             <p>
-              Sube un CSV o Excel. SmartEDA detecta estructura, relaciones,
-              segmentos y registros inusuales en segundos.
+              Exploración inicial de conjuntos de datos a partir de archivos CSV o Excel.
             </p>
-            <div class="seda-hero-formats">
-              <span>CSV / XLSX</span>
-              <span>Sin configuración</span>
-              <span>Resultados explicables</span>
-            </div>
           </div>
         </section>
         """,
         unsafe_allow_html=True,
     )
+
     st.markdown(
         """
         <div class="seda-process-strip">
           <div class="seda-feature">
-            <div class="seda-feature-index">01 / PERFIL</div>
-            <div class="seda-feature-title">Entiende la estructura</div>
+            <div class="seda-feature-index">PERFIL</div>
+            <div class="seda-feature-title">Explora la estructura</div>
             <div class="seda-feature-copy">
-              Tipos, faltantes y calidad de cada variable.
+              Identifica tipos de datos, valores faltantes y características
+              principales de cada variable.
             </div>
           </div>
+
           <div class="seda-feature">
-            <div class="seda-feature-index">02 / PATRONES</div>
-            <div class="seda-feature-title">Detecta relaciones</div>
+            <div class="seda-feature-index">PATRONES</div>
+            <div class="seda-feature-title">Analiza relaciones</div>
             <div class="seda-feature-copy">
-              Correlaciones y grupos que vale la pena revisar.
+              Examina correlaciones, distribuciones y posibles agrupaciones
+              presentes en los datos.
             </div>
           </div>
+
           <div class="seda-feature">
-            <div class="seda-feature-index">03 / LECTURA</div>
-            <div class="seda-feature-title">Llega a lo importante</div>
+            <div class="seda-feature-index">INTERPRETACIÓN</div>
+            <div class="seda-feature-title">Comprende los resultados</div>
             <div class="seda-feature-copy">
-              Hallazgos técnicos traducidos a lenguaje claro.
+              Presenta los resultados principales del análisis de forma clara
+              para facilitar su interpretación.
             </div>
           </div>
         </div>
@@ -252,13 +252,12 @@ def render_hero() -> None:
         unsafe_allow_html=True,
     )
 
-
 def render_upload_view() -> None:
     """Pantalla inicial de carga y configuración."""
     render_hero()
-    st.markdown('<div class="seda-section-heading">Comienza tu análisis</div>', unsafe_allow_html=True)
+    st.markdown('<div class="seda-section-heading">Comenzar Análisis</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="seda-section-copy">Selecciona un archivo o utiliza el dataset de demostración.</div>',
+        '<div class="seda-section-copy">Selecciona un archivo.</div>',
         unsafe_allow_html=True,
     )
 
@@ -282,7 +281,7 @@ def render_upload_view() -> None:
             ),
         )
         st.caption(
-            "Esta elección solo cambia la forma de crear segmentos; el resto del "
+            "Esta elección solo cambia la forma de crear los segmentos (sección 4) el resto del "
             "análisis se ejecuta de la misma manera."
         )
 
@@ -298,11 +297,6 @@ def render_upload_view() -> None:
     with sample_col:
         if st.button("Usar datos de ejemplo", width="stretch"):
             analyze_source(SAMPLE_DATASET, SAMPLE_DATASET.name, algorithm)
-
-    st.caption(
-        "El archivo se procesa durante la sesión actual. Esta versión no almacena "
-        "los datos en una base de datos."
-    )
 
 
 def build_profile_table(report: Any) -> pd.DataFrame:
@@ -392,13 +386,13 @@ def render_summary_view() -> None:
     safe_name = html.escape(str(st.session_state.active_file))
     elapsed = report.metadata.get("elapsed_seconds", 0)
     st.markdown('<div class="seda-eyebrow">Análisis completado</div>', unsafe_allow_html=True)
-    st.title("Resumen de tus datos")
+    st.title("Resumen de los datos")
     st.markdown(
         f"""
         <div class="seda-file-line">
           <div>
             <div class="seda-file-name">{safe_name}</div>
-            <div class="seda-file-meta">Archivo analizado correctamente</div>
+            <div class="seda-file-meta">Datos procesados</div>
           </div>
           <div class="seda-file-meta">{elapsed:.3f} segundos</div>
         </div>
@@ -411,13 +405,13 @@ def render_summary_view() -> None:
     metric_cols[0].metric("Registros", f"{report.profile.n_rows:,}")
     metric_cols[1].metric("Variables", report.profile.n_cols)
     metric_cols[2].metric("Valores faltantes", f"{total_missing:,}")
-    metric_cols[3].metric("Hallazgos", len(report.insights))
+    metric_cols[3].metric("Resultados", len(report.insights))
 
     insight_col, chart_col = st.columns([1.35, 1], gap="large")
     with insight_col:
-        st.markdown('<div class="seda-section-heading">Qué encontró SmartEDA</div>', unsafe_allow_html=True)
+        st.markdown('<div class="seda-section-heading">Qué se encontró</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="seda-section-copy">Una primera lectura automática de la estructura y los patrones del archivo.</div>',
+            '<div class="seda-section-copy">Aspectos identificados en la estructura y los patrones del archivo.</div>',
             unsafe_allow_html=True,
         )
         visible_insights = report.insights[:4]
@@ -426,7 +420,7 @@ def render_summary_view() -> None:
     with chart_col:
         st.markdown('<div class="seda-section-heading">Composición</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="seda-section-copy">Tipos de variables identificados por el motor.</div>',
+            '<div class="seda-section-copy">Tipos de variables presentes en el archivo.</div>',
             unsafe_allow_html=True,
         )
         st.plotly_chart(
@@ -436,13 +430,13 @@ def render_summary_view() -> None:
         )
 
     if len(report.insights) > len(visible_insights):
-        with st.expander(f"Ver los {len(report.insights)} hallazgos"):
+        with st.expander(f"Ver los {len(report.insights)} resultados"):
             for insight in report.insights:
                 render_insight(insight)
 
     st.markdown('<div class="seda-section-heading">Variables detectadas</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="seda-section-copy">El motor identificó automáticamente el tipo y la calidad básica de cada columna.</div>',
+        '<div class="seda-section-copy">Tipo de dato y calidad básica de cada columna.</div>',
         unsafe_allow_html=True,
     )
     st.dataframe(
@@ -450,17 +444,6 @@ def render_summary_view() -> None:
         width="stretch",
         hide_index=True,
     )
-
-    with st.expander("¿Cómo se obtuvo este resumen?"):
-        st.markdown(
-            """
-            El frontend envió el archivo a `AnalysisEngine.analyze()`. El motor de
-            Julián realizó la carga, limpieza, detección de tipos, correlaciones,
-            clustering, anomalías e insights. Esta pantalla toma los datos de
-            `report.profile`, `report.metadata` y `report.insights`; no vuelve a
-            calcular el análisis.
-            """
-        )
 
     action_col, spacer_col = st.columns([1, 2])
     with action_col:

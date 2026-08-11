@@ -374,9 +374,8 @@ def _render_method_details(result: Any) -> None:
     algorithm = result.algorithm.lower()
     if algorithm == "kmeans":
         explanation = (
-            "K-Means asigna todos los registros al grupo más parecido. El motor "
-            "probó distintas cantidades y eligió automáticamente la que produjo "
-            "la separación más clara."
+            "K-Means asigna todos los registros al grupo más parecido. Se probaron "
+            "distintas cantidades y se eligió la que produjo la separación más clara."
         )
         parameter = f"k = {result.params.get('k', result.n_clusters)}"
         parameter_copy = "cantidad de segmentos seleccionada"
@@ -388,7 +387,7 @@ def _render_method_details(result: Any) -> None:
         eps = result.params.get("eps", "—")
         min_samples = result.params.get("min_samples", "—")
         parameter = f"eps = {eps} · mínimo = {min_samples}"
-        parameter_copy = "distancia y vecinos mínimos elegidos por el motor"
+        parameter_copy = "distancia y vecinos mínimos usados en el análisis"
 
     st.html(
         dedent(
@@ -410,28 +409,15 @@ def render_segments_view(report: Any, filename: str | None) -> None:
         return
 
     result = report.clustering
-    safe_filename = html.escape(str(filename or "Dataset"))
     st.markdown(
-        '<div class="seda-eyebrow">Grupos encontrados automáticamente</div>',
+        '<div class="seda-eyebrow">Segmentación de registros</div>',
         unsafe_allow_html=True,
     )
-    st.title("¿Qué tipos de registros aparecen en tus datos?")
-    st.markdown(
-        """
-        <div class="seda-page-lead">
-          SmartEDA reúne registros que presentan combinaciones numéricas parecidas.
-          Esto permite comparar grupos y adaptar decisiones sin revisar cada fila
-          manualmente.
-          <strong>Un segmento representa similitud matemática; no es todavía una
-          etiqueta comercial ni una explicación de por qué existe.</strong>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.title("Grupos identificados en los datos")
 
     if result is None:
         _render_empty_state(
-            "El motor no pudo crear grupos con este archivo.",
+            "No fue posible crear grupos con este archivo.",
             (
                 "Se necesitan suficientes filas y al menos una variable numérica. "
                 "Prueba con otro archivo o revisa la estructura en Resumen."
@@ -440,19 +426,6 @@ def render_segments_view(report: Any, filename: str | None) -> None:
         return
 
     total = len(result.labels)
-    variables = ", ".join(_humanize(name) for name in result.features_used)
-    st.markdown(
-        f"""
-        <div class="seda-context-line">
-          <span>Archivo analizado</span>
-          <strong>{safe_filename}</strong>
-          <span>{html.escape(_algorithm_name(result.algorithm))}</span>
-          <span>{html.escape(variables)}</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     if result.n_clusters == 0:
         _render_empty_state(
             "No se formó ningún segmento estable.",
@@ -535,20 +508,14 @@ def render_segments_view(report: Any, filename: str | None) -> None:
             """
         ).strip()
     )
-    with st.expander("¿Qué significa silhouette sin fórmulas?"):
+    with st.expander("Interpretación de la puntuación silhouette"):
         st.markdown(
             """
-            Imagina que cada segmento es una mesa:
+            - Una puntuación **alta** indica grupos más separados.
+            - Una puntuación **media** indica cierta superposición entre grupos.
+            - Una puntuación **baja** indica que los grupos presentan mayor mezcla.
 
-            - Una puntuación **alta** significa que cada persona está sentada cerca
-              de quienes se le parecen y lejos de las otras mesas.
-            - Una puntuación **media** indica que algunas personas podrían sentarse
-              razonablemente en más de una mesa.
-            - Una puntuación **baja** avisa que las mesas se mezclan y que no conviene
-              tomar decisiones automáticas a partir de esos grupos.
-
-            La puntuación evalúa la separación matemática, no si los segmentos son
-            útiles para el negocio. Esa utilidad debe validarse con el contexto.
+            La puntuación evalúa la separación matemática de los registros.
             """
         )
 
@@ -573,64 +540,23 @@ def render_segments_view(report: Any, filename: str | None) -> None:
         config={"displayModeBar": False, "responsive": True},
     )
 
-    st.markdown(
-        '<div class="seda-section-heading">Cómo usar estos segmentos</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        """
-        <div class="seda-section-copy">
-          Estas recomendaciones convierten la estructura encontrada en próximos
-          pasos. Son orientación para investigar y probar, no decisiones automáticas
-          sobre personas o registros.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    _render_decision_guidance(result, total)
-
-    with st.expander("K-Means y DBSCAN explicados de forma sencilla"):
+    with st.expander("Métodos de segmentación"):
         first, second = st.columns(2, gap="large")
         with first:
             st.markdown(
                 """
-                **K-Means — todos entran en un grupo**
+                **K-Means**
 
-                Es útil cuando necesitas dividir toda la información en una cantidad
-                clara de grupos. Incluso un registro poco común recibirá un segmento.
+                Asigna cada registro al grupo con mayor similitud según las
+                variables numéricas analizadas.
                 """
             )
         with second:
             st.markdown(
                 """
-                **DBSCAN — solo agrupa donde encuentra cercanía**
+                **DBSCAN**
 
-                Es útil para descubrir grupos de formas diferentes y separar casos
-                aislados. Puede producir pocos grupos o dejar registros sin segmento.
+                Forma grupos a partir de registros cercanos y puede dejar sin grupo
+                los casos aislados.
                 """
             )
-        st.info(
-            "Para cambiar el método debes volver a Carga de datos, abrir Opciones "
-            "avanzadas y analizar nuevamente el archivo."
-        )
-
-    with st.expander("¿Cómo se construyó esta pantalla?"):
-        st.markdown(
-            """
-            El frontend no volvió a ejecutar clustering. Consumió directamente:
-
-            - `report.clustering.algorithm`
-            - `report.clustering.labels`
-            - `report.clustering.n_clusters`
-            - `report.clustering.features_used`
-            - `report.clustering.cluster_sizes`
-            - `report.clustering.silhouette`
-            - `report.clustering.params`
-            - `report.clustering.projection_2d`
-
-            El backend de Julián creó los grupos y la proyección. Esta pantalla
-            solamente los transforma en indicadores, gráficas y explicaciones.
-            Para describir qué caracteriza cada segmento se necesitará que una
-            versión futura del backend entregue perfiles o estadísticas por grupo.
-            """
-        )

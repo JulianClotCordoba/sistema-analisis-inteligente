@@ -96,6 +96,12 @@ def load_dataset(source: Source, **read_kwargs: Any) -> pd.DataFrame:
         raise FileValidationError(
             f"No se pudo decodificar '{name}'. Pruebe indicando encoding='latin-1'."
         ) from exc
+    except ImportError as exc:
+        format_name = "XLS" if suffix == ".xls" else "Excel"
+        raise FileValidationError(
+            f"No se pudo leer el archivo {format_name} '{name}' porque falta "
+            "un lector de Excel. Instale las dependencias del proyecto."
+        ) from exc
     except ValueError as exc:
         # pandas lanza ValueError ante contenido corrupto o motor faltante.
         raise FileValidationError(f"No se pudo leer '{name}': {exc}") from exc

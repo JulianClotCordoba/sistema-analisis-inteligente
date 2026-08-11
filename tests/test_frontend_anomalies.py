@@ -18,7 +18,7 @@ def test_sample_dataset_anomalies_screen():
 
     assert not app.exception
     assert [title.value for title in app.title] == [
-        "¿Qué registros se comportan de forma inusual?"
+        "Registros con comportamientos inusuales"
     ]
     assert any(
         metric.label == "Registros marcados" and metric.value == "3"

@@ -24,7 +24,7 @@ def test_sample_dataset_report_screen():
 
     assert not app.exception
     assert [title.value for title in app.title] == [
-        "Tu reporte está listo para compartir"
+        "Reporte del análisis"
     ]
     assert any(
         metric.label == "Registros" and metric.value == "183"
@@ -44,13 +44,13 @@ def test_generated_pdf_contains_complete_sections():
     assert len(reader.pages) >= 3
     text = "\n".join(page.extract_text() or "" for page in reader.pages)
     for expected in (
-        "SMARTEDA",
+        "PROYECTO UNIVERSITARIO",
         "clientes.csv",
-        "Resumen ejecutivo",
+        "Resumen de resultados",
         "Relaciones entre variables",
         "Segmentos",
         "Datos inusuales",
-        "Próximos pasos recomendados",
+        "Puntos para revisar",
         "Alcance y limitaciones",
     ):
         assert expected in text
