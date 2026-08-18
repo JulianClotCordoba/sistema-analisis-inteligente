@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import sys
 
+from .analysis.descriptive import BasicDescriptiveStats
 from .config import AnalysisConfig
 from .engine import AnalysisEngine
 from .exceptions import SmartEdaError
@@ -43,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     """Punto de entrada de la CLI. Devuelve el código de salida del proceso."""
     args = _build_parser().parse_args(argv)
     config = AnalysisConfig(clustering_algorithm=args.algorithm)
-    engine = AnalysisEngine(config)
+    engine = AnalysisEngine(config, descriptive_provider=BasicDescriptiveStats())
 
     exit_code = 0
     for file in args.files:
@@ -71,7 +72,22 @@ def _print_report(report) -> None:
     for insight in report.insights:
         marker = "[!]" if insight.severity == "warning" else " - "
         print(f"  {marker} {insight.message}")
+    _print_descriptive(report)
     print("=" * 60 + "\n")
+
+
+def _print_descriptive(report) -> None:
+    """Imprime las medidas principales de cada variable numérica."""
+    if report.descriptive is None or not report.descriptive.statistics:
+        return
+    print("\n  ESTADÍSTICA DESCRIPTIVA:")
+    for variable, medidas in report.descriptive.statistics.items():
+        print(
+            f"   - {variable}: media={medidas['media']:.2f} | "
+            f"mediana={medidas['mediana']:.2f} | "
+            f"desviación={medidas['desviacion_estandar']:.2f} | "
+            f"mínimo={medidas['minimo']:.2f} | máximo={medidas['maximo']:.2f}"
+        )
 
 
 if __name__ == "__main__":

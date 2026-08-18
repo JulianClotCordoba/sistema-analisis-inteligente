@@ -25,7 +25,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from smarteda import AnalysisConfig, AnalysisEngine  # noqa: E402
+from smarteda import (  # noqa: E402
+    AnalysisConfig,
+    AnalysisEngine,
+    BasicDescriptiveStats,
+    basic_clean,
+    load_dataset,
+)
 from smarteda.exceptions import SmartEdaError  # noqa: E402
 from app.anomalies import render_anomalies_view  # noqa: E402
 from app.relationships import render_relationships_view  # noqa: E402
@@ -44,6 +50,24 @@ TYPE_LABELS = {
     "boolean": "Sí / No",
     "text": "Texto",
     "unknown": "No identificado",
+}
+
+STAT_LABELS = {
+    "conteo": "Datos",
+    "faltantes": "Faltantes",
+    "media": "Media",
+    "mediana": "Mediana",
+    "moda": "Moda",
+    "desviacion_estandar": "Desviación",
+    "varianza": "Varianza",
+    "minimo": "Mínimo",
+    "q1": "Q1",
+    "q3": "Q3",
+    "maximo": "Máximo",
+    "rango": "Rango",
+    "iqr": "IQR",
+    "asimetria": "Asimetría",
+    "curtosis": "Curtosis",
 }
 
 TYPE_COLORS = {
@@ -76,6 +100,8 @@ def initialize_state() -> None:
         "view": "Carga de datos",
         "report": None,
         "active_file": None,
+        "categorical": None,
+        "segments": None,
         "selected_algorithm": "kmeans",
     }
     for key, value in defaults.items():
@@ -178,9 +204,13 @@ def analyze_source(source: Any, filename: str, algorithm: str) -> None:
         if hasattr(source, "seek"):
             source.seek(0)
         config = AnalysisConfig(clustering_algorithm=algorithm)
-        engine = AnalysisEngine(config)
+        provider = BasicDescriptiveStats()
+        engine = AnalysisEngine(config, descriptive_provider=provider)
         with st.spinner("Procesando el archivo..."):
             report = engine.analyze(source)
+            categorical, segments = build_extra_summaries(
+                source, config, provider, report
+            )
     except SmartEdaError as exc:
         st.error(
             "No pudimos analizar el archivo. Comprueba que tenga datos y que "
@@ -196,10 +226,35 @@ def analyze_source(source: Any, filename: str, algorithm: str) -> None:
         return
 
     st.session_state.report = report
+    st.session_state.categorical = categorical
+    st.session_state.segments = segments
     st.session_state.active_file = filename
     st.session_state.selected_algorithm = algorithm
     st.session_state.view = "Resumen"
     st.rerun()
+
+
+def build_extra_summaries(
+    source: Any, config: AnalysisConfig, provider: BasicDescriptiveStats, report: Any
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    """Resúmenes que necesitan el DataFrame: categorías y perfil de segmentos.
+
+    El `AnalysisReport` no transporta el DataFrame, así que se vuelve a leer
+    el archivo con la misma API pública y la misma limpieza que aplica el
+    motor, para que las filas y columnas coincidan con las del análisis.
+    """
+    try:
+        if hasattr(source, "seek"):
+            source.seek(0)
+        frame = load_dataset(source)
+        if config.enable_basic_cleaning:
+            frame = basic_clean(frame)
+        return (
+            provider.categorical_summary(frame, report.profile),
+            provider.segment_profiles(frame, report.profile, report.clustering),
+        )
+    except Exception:  # paneles opcionales: nunca deben tumbar el análisis
+        return {}, []
 
 
 def render_hero() -> None:
@@ -318,6 +373,43 @@ def build_profile_table(report: Any) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def build_descriptive_table(report: Any) -> pd.DataFrame:
+    """Convierte la estadística descriptiva de Rachel en una tabla."""
+    rows = []
+    for variable, measures in report.descriptive.statistics.items():
+        row: dict[str, Any] = {"Variable": variable}
+        for key, label in STAT_LABELS.items():
+            row[label] = measures.get(key, float("nan"))
+        rows.append(row)
+    return pd.DataFrame(rows).round(2)
+
+
+def _category_text(value: Any) -> str:
+    """Texto de una categoría; las booleanas se muestran como Sí / No."""
+    if isinstance(value, bool):
+        return "Sí" if value else "No"
+    return str(value)
+
+
+def build_categorical_table(summary: dict[str, dict[str, Any]]) -> pd.DataFrame:
+    """Convierte el resumen categórico de Rachel en una tabla."""
+    rows = []
+    for variable, values in summary.items():
+        dominant = values["categoria_mas_frecuente"]
+        rows.append(
+            {
+                "Variable": variable,
+                "Categorías": values["categorias_unicas"],
+                "Más frecuente": (
+                    "—" if dominant is None else _category_text(dominant)
+                ),
+                "Repeticiones": values["frecuencia"],
+                "% del total": f"{values['porcentaje']:.1f}%",
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def build_variable_type_chart(report: Any) -> go.Figure:
     """Representa los tipos que DataProfiler ya clasificó en el backend."""
     profile = report.profile
@@ -374,6 +466,39 @@ def render_insight(insight: Any) -> None:
         f'<div class="{css_class}">{safe_message}</div>',
         unsafe_allow_html=True,
     )
+
+
+def render_descriptive_section(report: Any) -> None:
+    """Muestra la estadística descriptiva calculada por Rachel."""
+    statistics = (
+        report.descriptive.statistics if report.descriptive is not None else {}
+    )
+    categorical = st.session_state.categorical or {}
+    if not statistics and not categorical:
+        return
+
+    st.markdown(
+        '<div class="seda-section-heading">Estadística descriptiva</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="seda-section-copy">Medidas de tendencia central, dispersión '
+        'y forma de cada variable.</div>',
+        unsafe_allow_html=True,
+    )
+    if statistics:
+        st.dataframe(
+            build_descriptive_table(report),
+            width="stretch",
+            hide_index=True,
+        )
+    if categorical:
+        st.caption("Variables de categoría y Sí / No")
+        st.dataframe(
+            build_categorical_table(categorical),
+            width="stretch",
+            hide_index=True,
+        )
 
 
 def render_summary_view() -> None:
@@ -445,10 +570,14 @@ def render_summary_view() -> None:
         hide_index=True,
     )
 
+    render_descriptive_section(report)
+
     action_col, spacer_col = st.columns([1, 2])
     with action_col:
         if st.button("Analizar otro archivo", width="stretch"):
             st.session_state.report = None
+            st.session_state.categorical = None
+            st.session_state.segments = None
             st.session_state.active_file = None
             st.session_state.view = "Carga de datos"
             st.rerun()
@@ -470,6 +599,7 @@ def main() -> None:
         render_segments_view(
             st.session_state.report,
             st.session_state.active_file,
+            st.session_state.segments,
         )
     elif st.session_state.view == "Datos inusuales":
         render_anomalies_view(

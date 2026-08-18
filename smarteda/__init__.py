@@ -12,6 +12,7 @@ Punto único de importación para el resto del equipo::
 
 from __future__ import annotations
 
+from .analysis.descriptive import BasicDescriptiveStats
 from .config import AnalysisConfig
 from .engine import AnalysisEngine
 from .exceptions import (
@@ -48,6 +49,7 @@ __all__ = [
     "load_dataset",
     "basic_clean",
     "DataProfiler",
+    "BasicDescriptiveStats",
     # modelos / contratos
     "DatasetProfile",
     "ColumnProfile",

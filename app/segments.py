@@ -7,6 +7,7 @@ from textwrap import dedent
 from typing import Any
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -27,6 +28,13 @@ SEGMENT_COLORS = [
 
 def _humanize(value: Any) -> str:
     return str(value).replace("_", " ").strip().capitalize()
+
+
+def _category_text(value: Any) -> str:
+    """Texto de una categoría; las booleanas se muestran como Sí / No."""
+    if isinstance(value, bool):
+        return "Sí" if value else "No"
+    return str(value)
 
 
 def _algorithm_name(value: str) -> str:
@@ -283,6 +291,85 @@ def _render_segment_cards(result: Any, total: int) -> None:
         )
 
 
+def build_segment_profile_table(
+    profiles: list[dict[str, Any]], features: list[str]
+) -> pd.DataFrame:
+    """Compara la media de cada variable por segmento contra la media general."""
+    if not profiles:
+        return pd.DataFrame()
+
+    medias_generales: dict[str, float] = {}
+    rows = []
+    for perfil in profiles:
+        row: dict[str, Any] = {
+            "Segmento": perfil["nombre"],
+            "Registros": perfil["tamano"],
+            "% del total": f"{perfil['porcentaje']:.1f}%",
+        }
+        for rasgo in perfil["rasgos"]:
+            row[_humanize(rasgo["variable"])] = round(rasgo["media"], 2)
+            medias_generales[rasgo["variable"]] = rasgo["media_general"]
+        dominante = perfil["categorias"][0] if perfil["categorias"] else None
+        row["Categoría dominante"] = (
+            f"{_humanize(dominante['variable'])}: "
+            f"{_category_text(dominante['categoria'])} "
+            f"({dominante['porcentaje']:.0f}%)"
+            if dominante
+            else "—"
+        )
+        rows.append(row)
+
+    if medias_generales:
+        general: dict[str, Any] = {
+            "Segmento": "General",
+            "Registros": sum(perfil["tamano"] for perfil in profiles),
+            "% del total": "100.0%",
+        }
+        for variable, media in medias_generales.items():
+            general[_humanize(variable)] = round(media, 2)
+        general["Categoría dominante"] = "—"
+        rows.append(general)
+
+    columnas = ["Segmento", "Registros", "% del total"]
+    columnas += [_humanize(f) for f in features if _humanize(f) in rows[0]]
+    columnas += ["Categoría dominante"]
+    return pd.DataFrame(rows)[columnas]
+
+
+def _render_segment_profiles(
+    profiles: list[dict[str, Any]], features: list[str]
+) -> None:
+    """Explica qué caracteriza a cada grupo, no solo cuántos registros tiene."""
+    if not profiles:
+        return
+
+    st.markdown(
+        '<div class="seda-section-heading">Qué distingue a cada segmento</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div class="seda-section-copy">
+          Cada grupo se compara con el promedio general del archivo. Así se ve qué
+          tienen en común los registros que quedaron juntos y qué variable pesó
+          más para separarlos. La fila General es la referencia de todo el conjunto.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.dataframe(
+        build_segment_profile_table(profiles, features),
+        width="stretch",
+        hide_index=True,
+    )
+    for perfil in profiles:
+        st.markdown(
+            f'<div class="seda-insight"><b>{html.escape(perfil["nombre"])}</b> · '
+            f'{html.escape(perfil["descripcion"])}</div>',
+            unsafe_allow_html=True,
+        )
+
+
 def _decision_guidance(result: Any, total: int) -> list[tuple[str, str, str]]:
     quality, _, _ = _quality_details(result.silhouette)
     items = _segment_items(result)
@@ -402,7 +489,9 @@ def _render_method_details(result: Any) -> None:
     st.caption(f"Configuración técnica: {parameter} — {parameter_copy}.")
 
 
-def render_segments_view(report: Any, filename: str | None) -> None:
+def render_segments_view(
+    report: Any, filename: str | None, profiles: list[dict[str, Any]] | None = None
+) -> None:
     """Renderiza la experiencia completa de segmentación."""
     if report is None:
         st.info("Primero debes analizar un archivo.")
@@ -486,6 +575,8 @@ def render_segments_view(report: Any, filename: str | None) -> None:
                 "numéricas para construir esta vista."
             ),
         )
+
+    _render_segment_profiles(profiles or [], result.features_used)
 
     quality_class = (
         "seda-quality-good"
